@@ -11,6 +11,8 @@ class MainViewModel(
     private val canReader: ICanReader
 ) : ViewModel() {
 
+    val state = canReader.state
+
     init {
         canReader.state.onEach {
             Log.d("CAN", it.toString())

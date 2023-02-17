@@ -15,15 +15,22 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
+import com.ub.utils.timer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 
 class CanReaderImpl @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    @Named(value = "globalScope") private val appCoroutineScope: CoroutineScope
 ) : ICanReader, SerialInputOutputManager.Listener {
 
     private val _state = MutableStateFlow(CanStateModel())
@@ -50,6 +57,17 @@ class CanReaderImpl @Inject constructor(
                         UsbPermission.Granted
                     } else UsbPermission.Denied
                 connect()
+            }
+        }
+    }
+
+    init {
+        appCoroutineScope.launch {
+            timer.forEach {
+                delay(TimeUnit.SECONDS.toMillis(1))
+                if (connected) {
+                    read()
+                }
             }
         }
     }
@@ -110,7 +128,7 @@ class CanReaderImpl @Inject constructor(
             return
         }
         if (usbConnection == null) {
-            if (manager?.hasPermission(driver.device) == true) {
+            if (manager?.hasPermission(driver.device) == false) {
                 status("connection failed: permission denied")
             } else {
                 status("connection failed: open failed")
@@ -127,7 +145,7 @@ class CanReaderImpl @Inject constructor(
             status("connected")
             connected = true
         } catch (e: Exception) {
-            status("connection failed: " + e.message)
+            status("connection failed: ${e.message}")
             disconnect()
         }
     }
@@ -146,6 +164,25 @@ class CanReaderImpl @Inject constructor(
         usbSerialPort = null
     }
 
+    private fun read() {
+        if (!connected) return
+        try {
+            val buffer = ByteArray(8192)
+            usbSerialPort?.read(buffer, READ_WAIT_MILLIS)?.let { len ->
+                _state.update { state ->
+                    state.copy(
+                        data = buffer.copyOf(len).toString()
+                    )
+                }
+            }
+        } catch (e: IOException) {
+            // when using read with timeout, USB bulkTransfer returns -1 on timeout _and_ errors
+            // like connection loss, so there is typically no exception thrown here on error
+            status("connection lost: ${e.message}")
+            disconnect()
+        }
+    }
+
     private fun status(info: String) {
         _state.update { state ->
             state.copy(
@@ -156,6 +193,7 @@ class CanReaderImpl @Inject constructor(
 
     companion object {
         private const val TAG = "CanReader"
+        private const val READ_WAIT_MILLIS = 2000
         const val DEVICE_ATTACHED_SIGNAL = "android.hardware.usb.action.USB_DEVICE_ATTACHED"
         const val INTENT_ACTION_GRANT_USB: String = BuildConfig.APPLICATION_ID + ".GRANT_USB"
     }
