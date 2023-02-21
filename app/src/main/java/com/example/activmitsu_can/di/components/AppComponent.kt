@@ -5,6 +5,7 @@ import com.example.activmitsu_can.di.MitsuViewModelFactory
 import com.example.activmitsu_can.di.modules.AppModule
 import com.example.activmitsu_can.di.modules.CoreModule
 import com.example.activmitsu_can.domain.service.OverflowWindowService
+import com.example.activmitsu_can.ui.main.MainViewModelFactory
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -16,6 +17,8 @@ import javax.inject.Singleton
 interface AppComponent {
 
     val viewModelProvider: MitsuViewModelFactory
+
+    val mainViewModelFactory: MainViewModelFactory
 
     val context: Context
 

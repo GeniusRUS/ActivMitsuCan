@@ -1,6 +1,5 @@
 package com.example.activmitsu_can.domain.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -22,7 +21,7 @@ import com.example.activmitsu_can.BuildConfig
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.di.DIManager
 import com.example.activmitsu_can.domain.can.ICanReader
-import com.example.activmitsu_can.ui.activity.MainActivity
+import com.example.activmitsu_can.ui.activity.ApplicationActivity
 import com.ub.utils.LogUtils
 import com.ub.utils.UbNotify
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -112,10 +111,10 @@ class OverflowWindowService : Service() {
             }
         )
 
-        canReader.state.onEach { canState ->
+        canReader.readerState.onEach { canState ->
             handler?.post {
                 val text = overlayView?.findViewById<TextView>(R.id.info)
-                text?.text = "${canState.data}\n${canState.status}"
+                text?.text = "${canState.speed}\n${canState.cvtTemp}"
             }
         }.launchIn(scope)
     }
@@ -141,7 +140,7 @@ class OverflowWindowService : Service() {
         if (overlayView?.isAttachedToWindow == false) {
             windowManager?.addView(overlayView, params)
             val text = overlayView?.findViewById<TextView>(R.id.info)
-            text?.text = "${canReader.state.value.data}\n${canReader.state.value.status}"
+            text?.text = "${canReader.readerState.value.speed}\n${canReader.readerState.value.cvtTemp}"
         }
     }
 
@@ -161,7 +160,7 @@ class OverflowWindowService : Service() {
             }
         ).setParams {
             val appIntent =
-                Intent(this@OverflowWindowService, MainActivity::class.java).let { appIntent ->
+                Intent(this@OverflowWindowService, ApplicationActivity::class.java).let { appIntent ->
                     PendingIntent.getActivity(
                         this@OverflowWindowService,
                         0,

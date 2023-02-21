@@ -12,32 +12,74 @@ import java.util.Random
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class CanReaderMock @Inject constructor(
     @Named(value = "globalScope") private val appCoroutineScope: CoroutineScope
-): ICanReader {
+) : ICanReader, ICanCommon {
 
-    private val _state = MutableStateFlow(CanStateModel())
-    override val state: StateFlow<CanStateModel>
-        get() = _state.asStateFlow()
+    private val _readerState = MutableStateFlow(CanStateModel())
+    override val readerState: StateFlow<CanStateModel>
+        get() = _readerState.asStateFlow()
 
-    override fun attachListener() {
-    }
+    private val _commonState = MutableStateFlow(CanCommonState())
+    override val commonState: StateFlow<CanCommonState>
+        get() = _commonState.asStateFlow()
 
-    override fun tryToConnect() {
+    init {
         appCoroutineScope.launch {
             timer.forEach { time ->
                 delay(TimeUnit.SECONDS.toMillis(1))
-                _state.update { state ->
+                _commonState.update { state ->
                     state.copy(
-                        data = Random().nextInt(4).toString(),
-                        status = time.toString()
+                        availableDevices = listOf(
+                            CanDevice(
+                                deviceId = 0,
+                                productName = "product name",
+                                vendorId = 1,
+                                productId = 2
+                            )
+                        )
                     )
+                }
+                if (_commonState.value.isConnected) {
+                    _readerState.update { state ->
+                        state.copy(
+                            speed = Random().nextInt(),
+                            cvtTemp = Random().nextInt()
+                        )
+                    }
                 }
             }
         }
     }
 
-    override fun detachListener() {
+    override fun tryToConnect() {
+        _commonState.update { state ->
+            state.copy(
+                isConnected = true,
+            )
+        }
     }
+
+    override fun tryToDisconnect() {
+        _readerState.update { state ->
+            state.copy(
+                speed = 0,
+                cvtTemp = 0
+            )
+        }
+        _commonState.update { state ->
+            state.copy(
+                isConnected = false
+            )
+        }
+    }
+
+    override fun attachListener() = Unit
+
+    override fun detachListener() = Unit
+
+    override fun setDeviceId(deviceId: Int) = Unit
 }

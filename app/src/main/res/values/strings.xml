@@ -2,6 +2,7 @@
     <string name="app_name">ActivMitsuCan</string>
 
     <string name="try_to_connect">Соединиться</string>
+    <string name="try_to_disconnect">Отсоединиться</string>
 
     <string name="error_permission_overlay_not_granted">Разрешение не предоставлено</string>
 

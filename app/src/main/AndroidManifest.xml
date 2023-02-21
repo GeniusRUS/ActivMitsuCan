@@ -17,9 +17,10 @@
         android:theme="@style/Theme.ActivMitsuCan"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".ui.activity.MainActivity"
+            android:name=".ui.activity.ApplicationActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.ActivMitsuCan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

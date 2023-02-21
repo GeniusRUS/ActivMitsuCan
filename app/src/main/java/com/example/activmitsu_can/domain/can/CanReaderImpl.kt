@@ -27,14 +27,20 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class CanReaderImpl @Inject constructor(
     private val context: Context,
     @Named(value = "globalScope") private val appCoroutineScope: CoroutineScope
-) : ICanReader, SerialInputOutputManager.Listener {
+) : ICanReader, ICanCommon, SerialInputOutputManager.Listener {
 
-    private val _state = MutableStateFlow(CanStateModel())
-    override val state: StateFlow<CanStateModel> = _state.asStateFlow()
+    private val _readerState = MutableStateFlow(CanStateModel())
+    override val readerState: StateFlow<CanStateModel> = _readerState.asStateFlow()
+
+    private val _commonState = MutableStateFlow(CanCommonState())
+    override val commonState: StateFlow<CanCommonState>
+        get() = _commonState.asStateFlow()
 
     private enum class UsbPermission {
         Unknown, Requested, Granted, Denied
@@ -63,8 +69,20 @@ class CanReaderImpl @Inject constructor(
 
     init {
         appCoroutineScope.launch {
-            timer.forEach {
+            timer.forEach { time ->
                 delay(TimeUnit.SECONDS.toMillis(1))
+                _commonState.update { state ->
+                    state.copy(
+                        availableDevices = (manager?.deviceList?.values ?: listOf()).toMutableList().map { device ->
+                            CanDevice(
+                                deviceId = device.deviceId,
+                                productName = device.productName,
+                                vendorId = device.vendorId,
+                                productId = device.productId
+                            )
+                        }
+                    )
+                }
                 if (connected) {
                     read()
                 }
@@ -76,6 +94,10 @@ class CanReaderImpl @Inject constructor(
         connect()
     }
 
+    override fun tryToDisconnect() {
+        disconnect()
+    }
+
     override fun attachListener() {
         context.registerReceiver(broadcastReceiver, IntentFilter(INTENT_ACTION_GRANT_USB))
     }
@@ -84,10 +106,14 @@ class CanReaderImpl @Inject constructor(
         context.unregisterReceiver(broadcastReceiver)
     }
 
+    override fun setDeviceId(deviceId: Int) {
+        this.deviceId = deviceId
+    }
+
     override fun onNewData(data: ByteArray?) {
-        _state.update { state ->
+        _readerState.update { state ->
             state.copy(
-                data = data.toString()
+
             )
         }
     }
@@ -102,16 +128,16 @@ class CanReaderImpl @Inject constructor(
             if (v.deviceId == deviceId) device = v
         }
         if (device == null) {
-            status("connection failed: device not found")
+            status("connection failed: device not found", false)
             return
         }
         val driver: UsbSerialDriver? = UsbSerialProber.getDefaultProber().probeDevice(device)
         if (driver == null) {
-            status("connection failed: no driver for device")
+            status("connection failed: no driver for device", false)
             return
         }
         if (driver.ports.size < portNum) {
-            status("connection failed: not enough ports at device")
+            status("connection failed: not enough ports at device", false)
             return
         }
         usbSerialPort = driver.ports[portNum]
@@ -129,9 +155,9 @@ class CanReaderImpl @Inject constructor(
         }
         if (usbConnection == null) {
             if (manager?.hasPermission(driver.device) == false) {
-                status("connection failed: permission denied")
+                status("connection failed: permission denied", false)
             } else {
-                status("connection failed: open failed")
+                status("connection failed: open failed", false)
             }
             return
         }
@@ -142,10 +168,10 @@ class CanReaderImpl @Inject constructor(
                 usbIoManager = SerialInputOutputManager(usbSerialPort, this)
                 usbIoManager?.start()
             }
-            status("connected")
+            status("connected", true)
             connected = true
         } catch (e: Exception) {
-            status("connection failed: ${e.message}")
+            status("connection failed: ${e.message}", false)
             disconnect()
         }
     }
@@ -168,25 +194,33 @@ class CanReaderImpl @Inject constructor(
         if (!connected) return
         try {
             val buffer = ByteArray(8192)
-            usbSerialPort?.read(buffer, READ_WAIT_MILLIS)?.let { len ->
-                _state.update { state ->
-                    state.copy(
-                        data = buffer.copyOf(len).toString()
-                    )
-                }
+            val byteResult = mutableListOf<Byte>()
+            while (usbSerialPort?.read(buffer, READ_WAIT_MILLIS) != 0) {
+                byteResult.addAll(buffer.toList())
+            }
+            println("Read size: ${byteResult.size}\nBytes: $byteResult")
+            _readerState.update { state ->
+                state.copy(
+
+                )
             }
         } catch (e: IOException) {
             // when using read with timeout, USB bulkTransfer returns -1 on timeout _and_ errors
             // like connection loss, so there is typically no exception thrown here on error
-            status("connection lost: ${e.message}")
+            status("connection lost: ${e.message}", false)
             disconnect()
         }
     }
 
-    private fun status(info: String) {
-        _state.update { state ->
+    private fun status(info: String, isConnected: Boolean) {
+        _readerState.update { state ->
             state.copy(
-                status = info
+
+            )
+        }
+        _commonState.update { state ->
+            state.copy(
+                isConnected = isConnected
             )
         }
     }

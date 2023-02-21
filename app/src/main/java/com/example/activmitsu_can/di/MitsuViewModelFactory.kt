@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.activmitsu_can.domain.can.ICanReader
-import com.example.activmitsu_can.ui.activity.MainViewModel
+import com.example.activmitsu_can.ui.activity.ApplicationViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +17,7 @@ class MitsuViewModelFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         return when (modelClass) {
-            MainViewModel::class.java -> MainViewModel(canReader)
+            ApplicationViewModel::class.java -> ApplicationViewModel(canReader)
             else -> throw IllegalArgumentException("Unknown class $modelClass")
         } as T
     }
