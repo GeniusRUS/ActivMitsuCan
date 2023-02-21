@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.activmitsu_can.di.MitsuViewModelFactory
 import com.example.activmitsu_can.di.modules.AppModule
 import com.example.activmitsu_can.di.modules.CoreModule
+import com.example.activmitsu_can.domain.service.OverflowWindowService
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -17,6 +18,8 @@ interface AppComponent {
     val viewModelProvider: MitsuViewModelFactory
 
     val context: Context
+
+    fun inject(service: OverflowWindowService)
 
     @Component.Builder
     interface Builder {

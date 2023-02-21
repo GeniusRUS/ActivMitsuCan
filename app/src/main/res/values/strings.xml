@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">ActivMitsuCan</string>
+
+    <string name="try_to_connect">Соединиться</string>
+
+    <string name="error_permission_overlay_not_granted">Разрешение не предоставлено</string>
+
+    <string name="service_title">ActivMitsuCan</string>
+    <string name="service_description">Сервис чтения данных</string>
+
+    <string name="service_channel_id">activ_mitsu_can_channel_id</string>
+    <string name="service_tracking_channel_name">Сервис чтения данных</string>
 </resources>

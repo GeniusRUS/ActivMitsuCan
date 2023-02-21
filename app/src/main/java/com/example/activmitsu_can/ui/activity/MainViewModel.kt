@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.activmitsu_can.domain.can.ICanReader
+import com.ub.utils.withUseCaseScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -13,9 +16,12 @@ class MainViewModel(
 
     val state = canReader.state
 
+    private val _errorFlow = MutableSharedFlow<String>()
+    val errorFlow = _errorFlow.asSharedFlow()
+
     init {
         canReader.state.onEach {
-            Log.d("CAN", it.toString())
+
         }.launchIn(viewModelScope)
     }
 
@@ -29,5 +35,11 @@ class MainViewModel(
 
     fun detachListener() {
         canReader.detachListener()
+    }
+
+    fun propagateError(message: String) {
+        withUseCaseScope {
+            _errorFlow.emit(message)
+        }
     }
 }
