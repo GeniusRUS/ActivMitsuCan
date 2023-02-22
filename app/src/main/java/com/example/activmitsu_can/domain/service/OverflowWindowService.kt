@@ -123,6 +123,14 @@ class OverflowWindowService : Service() {
         if (intent?.action == START_SERVICE) {
             generateForegroundNotification()
             createOverlayWindow()
+        } else if (intent?.action == STOP_SERVICE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+            } else {
+                @Suppress("DEPRECATION")
+                stopForeground(true)
+            }
+            stopSelf()
         }
         return START_STICKY
     }
@@ -177,6 +185,7 @@ class OverflowWindowService : Service() {
 
     companion object {
         const val START_SERVICE = "${BuildConfig.APPLICATION_ID}/can/start"
+        const val STOP_SERVICE = "${BuildConfig.APPLICATION_ID}/can/stop"
         private const val TAG = "OverflowWindowService"
         private const val FOREGROUND_NOTIFICATION_ID = 42
         private const val LayoutParamFlags = LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or

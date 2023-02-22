@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="true"/>
+
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@null"
@@ -21,6 +25,7 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.ActivMitsuCan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,7 +40,8 @@
         </activity>
         <service
             android:name=".domain.service.OverflowWindowService"
-            android:exported="false"/>
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"/>
     </application>
 
 </manifest>

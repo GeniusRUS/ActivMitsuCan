@@ -35,6 +35,7 @@ class CanReaderMock @Inject constructor(
                     state.copy(
                         availableDevices = listOf(
                             CanDevice(
+                                name = "name",
                                 deviceId = 0,
                                 productName = "product name",
                                 vendorId = 1,

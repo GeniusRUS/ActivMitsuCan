@@ -79,6 +79,7 @@ dependencies {
     implementation("io.github.unitbean:androidcore:2.7.0")
     implementation("com.google.dagger:dagger:$daggerVer")
     implementation("com.google.dagger:dagger-android:$daggerVer")
+    implementation("androidx.core:core-ktx:1.9.0")
     kapt("com.google.dagger:dagger-compiler:$daggerVer")
     kapt("com.google.dagger:dagger-android-processor:$daggerVer")
 

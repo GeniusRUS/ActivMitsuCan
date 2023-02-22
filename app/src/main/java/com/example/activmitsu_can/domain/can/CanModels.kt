@@ -1,18 +1,20 @@
 package com.example.activmitsu_can.domain.can
 
 data class CanStateModel(
-    val doors: CanDoorState = CanDoorState(),
+    val openable: CanOpenableState = CanOpenableState(),
     val speed: Int = 0,
     val tirePressure: CanTirePressureState = CanTirePressureState(),
     val engineTemp: Int = 0,
     val cvtTemp: Int = 0
 )
 
-data class CanDoorState(
+data class CanOpenableState(
     val leftForward: Boolean = false,
     val rightForward: Boolean = false,
     val leftBackward: Boolean = false,
     val rightBackward: Boolean = false,
+    val truncate: Boolean = false,
+    val hood: Boolean = false
 )
 
 data class CanTirePressureState(
@@ -28,6 +30,7 @@ data class CanCommonState(
 )
 
 data class CanDevice(
+    val name: String,
     val deviceId: Int,
     val productName: String?,
     val vendorId: Int,

@@ -73,14 +73,15 @@ class CanReaderImpl @Inject constructor(
                 delay(TimeUnit.SECONDS.toMillis(1))
                 _commonState.update { state ->
                     state.copy(
-                        availableDevices = (manager?.deviceList?.values ?: listOf()).toMutableList().map { device ->
+                        availableDevices = manager?.deviceList?.map { (name, device) ->
                             CanDevice(
+                                name = name,
                                 deviceId = device.deviceId,
                                 productName = device.productName,
                                 vendorId = device.vendorId,
                                 productId = device.productId
                             )
-                        }
+                        } ?: listOf()
                     )
                 }
                 if (connected) {
@@ -190,6 +191,15 @@ class CanReaderImpl @Inject constructor(
         usbSerialPort = null
     }
 
+    /**
+     * Two types of data:
+     *
+     * Float, int, int, float, float;
+     *
+     * Int, int, int, int, int, int;
+     *
+     * Где 0 - закрыто, 1 - открыто. Дверь1, дверь2, дверь3, дверь4, багажник, капот
+     */
     private fun read() {
         if (!connected) return
         try {

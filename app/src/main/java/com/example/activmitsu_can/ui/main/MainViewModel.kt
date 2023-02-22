@@ -2,6 +2,7 @@ package com.example.activmitsu_can.ui.main
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -42,20 +43,25 @@ class MainViewModel @AssistedInject constructor(
     val errorFlow = _errorFlow.asSharedFlow()
 
     init {
+        dataStore.data.map { it[booleanPreferencesKey(OVERLAY_IS_ENABLED)] }.onEach { isOverlayEnabled ->
+            savedStateHandle[OVERLAY_IS_ENABLED] = isOverlayEnabled ?: false
+        }.launchIn(viewModelScope)
         dataStore.data.map { it[intPreferencesKey(DEVICE_ID)] }.onEach { savedDeviceId ->
             savedStateHandle[DEVICE_ID] = savedDeviceId?.toString() ?: ""
         }.launchIn(viewModelScope)
         combine(
             savedStateHandle.getStateFlow(DEVICE_ID, ""),
+            savedStateHandle.getStateFlow(OVERLAY_IS_ENABLED, false),
             canReader.readerState,
             canCommon.commonState
-        ) { deviceId, readerState, commonState ->
+        ) { deviceId, isOverlayNeeded, readerState, commonState ->
             _state.update { state ->
                 state.copy(
                     deviceId = deviceId,
                     speed = readerState.speed,
                     cvtTemp = readerState.cvtTemp,
-                    isConnected = commonState.isConnected
+                    isConnected = commonState.isConnected,
+                    isNeedOverlay = isOverlayNeeded
                 )
             }
         }.launchIn(viewModelScope)
@@ -71,12 +77,17 @@ class MainViewModel @AssistedInject constructor(
                 dataStore.updateData {
                     it.toMutablePreferences().apply {
                         this[intPreferencesKey(DEVICE_ID)] = deviceId
+                        this[booleanPreferencesKey(OVERLAY_IS_ENABLED)] = _state.value.isNeedOverlay
                     }
                 }
                 canCommon.setDeviceId(deviceId)
                 canReader.tryToConnect()
             } ?: _errorFlow.emit("Device id is not correct")
         }
+    }
+
+    fun onChangeOverlayNeeded(isNeedOverlay: Boolean) {
+        savedStateHandle[OVERLAY_IS_ENABLED] = isNeedOverlay
     }
 
     fun onDeviceIdChanged(deviceId: String) {
@@ -95,5 +106,9 @@ class MainViewModel @AssistedInject constructor(
         withUseCaseScope {
             _errorFlow.emit(message)
         }
+    }
+
+    companion object {
+        private const val OVERLAY_IS_ENABLED = "overlay_is_enabled"
     }
 }

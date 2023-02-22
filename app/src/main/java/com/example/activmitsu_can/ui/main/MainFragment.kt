@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.di.DIManager
 import com.example.activmitsu_can.domain.service.OverflowWindowService
@@ -45,9 +46,7 @@ class MainFragment : Fragment() {
         if (Settings.canDrawOverlays(requireContext()) && checkNotificationPermission()) {
             createOverlayWindow()
         } else {
-            viewModel.propagateError(
-                getString(R.string.error_permission_overlay_not_granted)
-            )
+            viewModel.propagateError(getString(R.string.error_permission_overlay_not_granted))
         }
     }
 
@@ -67,21 +66,30 @@ class MainFragment : Fragment() {
                         MainScreen(
                             state = state,
                             onDeviceIdChange = { viewModel.onDeviceIdChanged(it) },
-                            onTryToDisconnect = { viewModel.stopListener() },
-                            onTryToConnect = { viewModel.startListener() },
+                            onTryToDisconnect = {
+                                removeOverlayWindow()
+                                viewModel.stopListener()
+                            },
+                            onTryToConnect = { isNeedOverlay ->
+                                if (isNeedOverlay) {
+                                    if (checkStartPermissionRequest() && checkNotificationPermission()) {
+                                        createOverlayWindow()
+                                        viewModel.startListener()
+                                    }
+                                } else {
+                                    viewModel.startListener()
+                                }
+                            },
+                            onGoToSettings = {
+                                val direction = MainFragmentDirections.actionMainFragmentToPreferencesFragment()
+                                findNavController().navigate(direction)
+                            },
+                            onChangeOverlayNeeded = { viewModel.onChangeOverlayNeeded(it) },
                             errorFlow = viewModel.errorFlow
                         )
                     }
                 }
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if (checkStartPermissionRequest() && checkNotificationPermission()) {
-            createOverlayWindow()
         }
     }
 
@@ -122,6 +130,12 @@ class MainFragment : Fragment() {
     private fun createOverlayWindow() {
         val intent = Intent(requireContext(), OverflowWindowService::class.java)
             .setAction(OverflowWindowService.START_SERVICE)
+        requireActivity().startService(intent)
+    }
+
+    private fun removeOverlayWindow() {
+        val intent = Intent(requireContext(), OverflowWindowService::class.java)
+            .setAction(OverflowWindowService.STOP_SERVICE)
         requireActivity().startService(intent)
     }
 }
