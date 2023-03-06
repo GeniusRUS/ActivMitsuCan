@@ -15,11 +15,13 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.activmitsu_can.BuildConfig
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.di.DIManager
+import com.example.activmitsu_can.domain.can.CanStateModel
 import com.example.activmitsu_can.domain.can.ICanReader
 import com.example.activmitsu_can.ui.activity.ApplicationActivity
 import com.ub.utils.LogUtils
@@ -113,8 +115,7 @@ class OverflowWindowService : Service() {
 
         canReader.readerState.onEach { canState ->
             handler?.post {
-                val text = overlayView?.findViewById<TextView>(R.id.info)
-                text?.text = "${canState.speed}\n${canState.cvtTemp}"
+                updateOverlayView(overlayView, canState)
             }
         }.launchIn(scope)
     }
@@ -147,8 +148,7 @@ class OverflowWindowService : Service() {
     private fun createOverlayWindow() {
         if (overlayView?.isAttachedToWindow == false) {
             windowManager?.addView(overlayView, params)
-            val text = overlayView?.findViewById<TextView>(R.id.info)
-            text?.text = "${canReader.readerState.value.speed}\n${canReader.readerState.value.cvtTemp}"
+            updateOverlayView(overlayView, canReader.readerState.value)
         }
     }
 
@@ -181,6 +181,72 @@ class OverflowWindowService : Service() {
             .build()
 
         startForeground(FOREGROUND_NOTIFICATION_ID, notification)
+    }
+
+    private fun updateOverlayView(overlayView: View?, state: CanStateModel) {
+        val doorFrontLeft = overlayView?.findViewById<ImageView>(R.id.door_front_left)
+        val doorFrontRight = overlayView?.findViewById<ImageView>(R.id.door_front_right)
+        val doorRearLeft = overlayView?.findViewById<ImageView>(R.id.door_rear_left)
+        val doorRearRight = overlayView?.findViewById<ImageView>(R.id.door_rear_right)
+
+        val wheelFrontLeft = overlayView?.findViewById<ImageView>(R.id.wheel_front_left)
+        val wheelFrontRight = overlayView?.findViewById<ImageView>(R.id.wheel_front_right)
+        val wheelRearLeft = overlayView?.findViewById<ImageView>(R.id.wheel_rear_left)
+        val wheelRearRight = overlayView?.findViewById<ImageView>(R.id.wheel_rear_right)
+
+        val wheelFrontLeftTemperature = overlayView?.findViewById<TextView>(R.id.wheel_front_left_temp)
+        val wheelFrontRightTemperature = overlayView?.findViewById<TextView>(R.id.wheel_front_right_temp)
+        val wheelRearLeftTemperature = overlayView?.findViewById<TextView>(R.id.wheel_rear_left_temp)
+        val wheelRearRightTemperature = overlayView?.findViewById<TextView>(R.id.wheel_rear_right_temp)
+
+        val wheelFrontLeftPressure = overlayView?.findViewById<TextView>(R.id.wheel_front_left_pressure)
+        val wheelFrontRightPressure = overlayView?.findViewById<TextView>(R.id.wheel_front_right_pressure)
+        val wheelRearLeftPressure = overlayView?.findViewById<TextView>(R.id.wheel_rear_left_pressure)
+        val wheelRearRightPressure = overlayView?.findViewById<TextView>(R.id.wheel_rear_right_pressure)
+
+        doorFrontLeft?.isActivated = canReader.readerState.value.openable.leftForward
+        doorFrontRight?.isActivated = canReader.readerState.value.openable.rightForward
+        doorRearLeft?.isActivated = canReader.readerState.value.openable.leftBackward
+        doorRearRight?.isActivated = canReader.readerState.value.openable.rightBackward
+
+        wheelFrontLeft?.isActivated = state.wheels.leftFrontPressure < 2F
+        wheelFrontRight?.isActivated = state.wheels.rightFrontPressure < 2F
+        wheelRearLeft?.isActivated = state.wheels.leftRearPressure < 2F
+        wheelRearRight?.isActivated = state.wheels.rightRearPressure < 2F
+
+        wheelFrontLeftPressure?.text = String.format(
+            getString(R.string.pressure_mask),
+            state.wheels.leftFrontPressure.toString()
+        )
+        wheelFrontRightPressure?.text = String.format(
+            getString(R.string.pressure_mask),
+            state.wheels.rightFrontPressure.toString()
+        )
+        wheelRearLeftPressure?.text = String.format(
+            getString(R.string.pressure_mask),
+            state.wheels.leftRearPressure.toString()
+        )
+        wheelRearRightPressure?.text = String.format(
+            getString(R.string.pressure_mask),
+            state.wheels.rightRearPressure.toString()
+        )
+
+        wheelFrontLeftTemperature?.text = String.format(
+            getString(R.string.temperature_mask),
+            state.wheels.leftFrontTemperature.toString()
+        )
+        wheelFrontRightTemperature?.text = String.format(
+            getString(R.string.temperature_mask),
+            state.wheels.rightFrontTemperature.toString()
+        )
+        wheelRearLeftTemperature?.text = String.format(
+            getString(R.string.temperature_mask),
+            state.wheels.leftRearTemperature.toString()
+        )
+        wheelRearRightTemperature?.text = String.format(
+            getString(R.string.temperature_mask),
+            state.wheels.rightRearTemperature.toString()
+        )
     }
 
     companion object {

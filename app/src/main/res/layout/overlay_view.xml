@@ -10,22 +10,209 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:cardCornerRadius="8dp">
+        app:cardBackgroundColor="@color/black_80"
+        app:cardCornerRadius="32dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="8dp">
 
-            <TextView
-                android:id="@+id/info"
+            <ImageView
+                android:id="@+id/body_image"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:gravity="center_horizontal"
+                android:layout_height="0dp"
+                android:background="@drawable/body_white"
+                android:contentDescription="@string/description_body"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/door_front_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_door_fl"
+                android:contentDescription="@string/description_door_front_left"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/door_front_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_door_fr"
+                android:contentDescription="@string/description_door_front_right"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/door_rear_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_door_rl"
+                android:contentDescription="@string/description_door_rear_left"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/door_rear_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_door_rr"
+                android:contentDescription="@string/description_door_rear_right"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/wheel_front_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_wheel_fl"
+                android:contentDescription="@string/description_wheel_front_left"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/wheel_front_left_temp"
+                style="@style/OverlayText"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="@tools:sample/full_names"/>
+                app:layout_constraintEnd_toEndOf="@+id/guideline_left"
+                app:layout_constraintStart_toStartOf="@+id/guideline_left"
+                app:layout_constraintVertical_bias="0.15"
+                tools:text="@string/pressure_mask" />
+
+            <TextView
+                android:id="@+id/wheel_front_left_pressure"
+                style="@style/OverlayText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_left"
+                app:layout_constraintStart_toStartOf="@+id/guideline_left"
+                app:layout_constraintVertical_bias="0.335"
+                tools:text="@string/temperature_mask" />
+
+            <ImageView
+                android:id="@+id/wheel_front_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_wheel_fr"
+                android:contentDescription="@string/description_wheel_front_right"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/wheel_front_right_temp"
+                style="@style/OverlayText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_right"
+                app:layout_constraintStart_toStartOf="@+id/guideline_right"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.15"
+                tools:text="@string/temperature_mask" />
+
+            <TextView
+                android:id="@+id/wheel_front_right_pressure"
+                style="@style/OverlayText"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.735"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.335"
+                tools:text="@string/pressure_mask" />
+
+            <ImageView
+                android:id="@+id/wheel_rear_left"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_wheel_rl"
+                android:contentDescription="@string/description_wheel_rear_left"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/wheel_rear_left_temp"
+                style="@style/OverlayText"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_left"
+                app:layout_constraintVertical_bias="0.655"
+                tools:text="@tools:sample/us_zipcodes" />
+
+            <TextView
+                android:id="@+id/wheel_rear_left_pressure"
+                style="@style/OverlayText"
+                app:layout_constraintStart_toStartOf="@+id/guideline_left"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_left"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.835"
+                tools:text="@tools:sample/us_zipcodes" />
+
+            <ImageView
+                android:id="@+id/wheel_rear_right"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_wheel_rr"
+                android:contentDescription="@string/description_wheel_rear_right"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/wheel_rear_right_temp"
+                style="@style/OverlayText"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.655"
+                tools:text="@tools:sample/us_zipcodes" />
+
+            <TextView
+                android:id="@+id/wheel_rear_right_pressure"
+                style="@style/OverlayText"
+                app:layout_constraintStart_toStartOf="@+id/guideline_right"
+                app:layout_constraintEnd_toEndOf="@+id/guideline_right"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.835"
+                tools:text="@tools:sample/us_zipcodes" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.275" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.705" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </FrameLayout>

@@ -3,7 +3,7 @@ package com.example.activmitsu_can.domain.can
 data class CanStateModel(
     val openable: CanOpenableState = CanOpenableState(),
     val speed: Int = 0,
-    val tirePressure: CanTirePressureState = CanTirePressureState(),
+    val wheels: WheelState = WheelState(),
     val engineTemp: Int = 0,
     val cvtTemp: Int = 0
 )
@@ -17,11 +17,15 @@ data class CanOpenableState(
     val hood: Boolean = false
 )
 
-data class CanTirePressureState(
-    val leftForward: Int = 0,
-    val rightForward: Int = 0,
-    val leftBackward: Int = 0,
-    val rightBackward: Int = 0,
+data class WheelState(
+    val leftFrontPressure: Float = 0F,
+    val rightFrontPressure: Float = 0F,
+    val leftRearPressure: Float = 0F,
+    val rightRearPressure: Float = 0F,
+    val leftFrontTemperature: Int = 0,
+    val rightFrontTemperature: Int = 0,
+    val leftRearTemperature: Int = 0,
+    val rightRearTemperature: Int = 0,
 )
 
 data class CanCommonState(

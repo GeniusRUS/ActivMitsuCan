@@ -46,9 +46,26 @@ class CanReaderMock @Inject constructor(
                 }
                 if (_commonState.value.isConnected) {
                     _readerState.update { state ->
+                        val random = Random()
                         state.copy(
-                            speed = Random().nextInt(),
-                            cvtTemp = Random().nextInt()
+                            speed = random.nextInt(),
+                            cvtTemp = random.nextInt(),
+                            openable = state.openable.copy(
+                                leftForward = random.nextBoolean(),
+                                leftBackward = random.nextBoolean(),
+                                rightBackward = random.nextBoolean(),
+                                rightForward = random.nextBoolean()
+                            ),
+                            wheels = state.wheels.copy(
+                                leftFrontPressure = random.nextInt(25).div(10F),
+                                leftRearPressure = random.nextInt(25).div(10F),
+                                rightFrontPressure = random.nextInt(25).div(10F),
+                                rightRearPressure = random.nextInt(25).div(10F),
+                                leftFrontTemperature = random.nextInt(20),
+                                leftRearTemperature = random.nextInt(20),
+                                rightFrontTemperature = random.nextInt(20),
+                                rightRearTemperature = random.nextInt(20),
+                            )
                         )
                     }
                 }

@@ -5,6 +5,9 @@
     <string name="try_to_disconnect">Отсоединиться</string>
     <string name="is_foreground_is_needed">Отображать поверх</string>
 
+    <string name="temperature_mask">%1$s гр.</string>
+    <string name="pressure_mask">%1$s атм</string>
+
     <string name="error_permission_overlay_not_granted">Разрешение не предоставлено</string>
 
     <string name="service_title">ActivMitsuCan</string>
@@ -12,4 +15,14 @@
 
     <string name="service_channel_id">activ_mitsu_can_channel_id</string>
     <string name="service_tracking_channel_name">Сервис чтения данных</string>
+
+    <string name="description_body">Кузов</string>
+    <string name="description_door_front_left">Передняя левая дверь</string>
+    <string name="description_door_front_right">Передняя правая дверь</string>
+    <string name="description_door_rear_left">Задняя левая дверь</string>
+    <string name="description_door_rear_right">Задняя правая дверь</string>
+    <string name="description_wheel_front_left">Переднее левое колесо</string>
+    <string name="description_wheel_front_right">Переднее правое колесо</string>
+    <string name="description_wheel_rear_left">Заднее левое колесо</string>
+    <string name="description_wheel_rear_right">Заднее правое колесо</string>
 </resources>
