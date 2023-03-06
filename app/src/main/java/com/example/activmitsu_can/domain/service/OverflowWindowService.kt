@@ -1,5 +1,6 @@
 package com.example.activmitsu_can.domain.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -55,6 +56,7 @@ class OverflowWindowService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate() {
         super.onCreate()
 
@@ -213,6 +215,11 @@ class OverflowWindowService : Service() {
         wheelFrontRight?.isActivated = state.wheels.rightFrontPressure < 2F
         wheelRearLeft?.isActivated = state.wheels.leftRearPressure < 2F
         wheelRearRight?.isActivated = state.wheels.rightRearPressure < 2F
+
+        wheelFrontLeftPressure?.isActivated = state.wheels.leftFrontPressure < 2F
+        wheelFrontRightPressure?.isActivated = state.wheels.rightFrontPressure < 2F
+        wheelRearLeftPressure?.isActivated = state.wheels.leftRearPressure < 2F
+        wheelRearRightPressure?.isActivated = state.wheels.rightRearPressure < 2F
 
         wheelFrontLeftPressure?.text = String.format(
             getString(R.string.pressure_mask),
