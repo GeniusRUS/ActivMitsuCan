@@ -6,4 +6,6 @@ data class PreferencesState(
     val sensorLeftRear: String = "",
     val sensorRightFront: String = "",
     val sensorRightRear: String = "",
+    val lowPressureTreshhold: Float = 2F,
+    val displayingHideDelayInSeconds: Int = 5
 )

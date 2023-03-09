@@ -50,6 +50,8 @@ class PreferencesFragment : Fragment() {
                             onRightRearChange = { viewModel.onRightRearChange(it) },
                             onSave = { viewModel.saveData() },
                             onSelectDeviceToConnect = { viewModel.onDeviceIdChanged(it.toString()) },
+                            onLowPressureChange = { viewModel.onLowPressureChange(it) },
+                            onDisplayingHideChange = { viewModel.onDisplayDelayChange(it) },
                             errorFlow = viewModel.errorFlow
                         )
                     }

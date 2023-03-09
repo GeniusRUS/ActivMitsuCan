@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
@@ -43,6 +44,8 @@ fun PreferencesScreen(
     onLeftFrontChange: (String) -> Unit,
     onRightFrontChange: (String) -> Unit,
     onLeftRearChange: (String) -> Unit,
+    onLowPressureChange: (String) -> Unit,
+    onDisplayingHideChange: (String) -> Unit,
     onRightRearChange: (String) -> Unit,
     onSelectDeviceToConnect: (Int) -> Unit,
     onSave: () -> Unit,
@@ -66,7 +69,7 @@ fun PreferencesScreen(
                 modifier = Modifier
                     .verticalScroll(scrollState)
             ) {
-                TextField(
+                OutlinedTextField(
                     value = state.deviceId,
                     onValueChange = onDeviceIdChange,
                     keyboardOptions = KeyboardOptions(
@@ -77,7 +80,7 @@ fun PreferencesScreen(
                     }
                 )
                 Row {
-                    TextField(
+                    OutlinedTextField(
                         value = state.sensorLeftFront,
                         onValueChange = onLeftFrontChange,
                         keyboardOptions = KeyboardOptions(
@@ -87,7 +90,7 @@ fun PreferencesScreen(
                             Text(text = stringResource(id = R.string.description_wheel_front_left))
                         }
                     )
-                    TextField(
+                    OutlinedTextField(
                         value = state.sensorRightFront,
                         onValueChange = onRightFrontChange,
                         keyboardOptions = KeyboardOptions(
@@ -99,7 +102,7 @@ fun PreferencesScreen(
                     )
                 }
                 Row {
-                    TextField(
+                    OutlinedTextField(
                         value = state.sensorLeftRear,
                         onValueChange = onLeftRearChange,
                         keyboardOptions = KeyboardOptions(
@@ -109,7 +112,7 @@ fun PreferencesScreen(
                             Text(text = stringResource(id = R.string.description_wheel_rear_left))
                         }
                     )
-                    TextField(
+                    OutlinedTextField(
                         value = state.sensorRightRear,
                         onValueChange = onRightRearChange,
                         keyboardOptions = KeyboardOptions(
@@ -117,6 +120,28 @@ fun PreferencesScreen(
                         ),
                         placeholder = {
                             Text(text = stringResource(id = R.string.description_wheel_rear_right))
+                        }
+                    )
+                }
+                Row {
+                    OutlinedTextField(
+                        value = state.lowPressureTreshhold.toString(),
+                        onValueChange = onLowPressureChange,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        placeholder = {
+                            Text(text = stringResource(id = R.string.low_pressure_treshhold))
+                        }
+                    )
+                    OutlinedTextField(
+                        value = state.displayingHideDelayInSeconds.toString(),
+                        onValueChange = onDisplayingHideChange,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal
+                        ),
+                        placeholder = {
+                            Text(text = stringResource(id = R.string.displaying_hide_delay))
                         }
                     )
                 }

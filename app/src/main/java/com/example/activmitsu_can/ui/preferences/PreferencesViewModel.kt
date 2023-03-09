@@ -2,28 +2,30 @@ package com.example.activmitsu_can.ui.preferences
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.activmitsu_can.domain.can.DEVICE_ID
+import com.example.activmitsu_can.domain.can.DISPLAYED_DELAY
 import com.example.activmitsu_can.domain.can.ICanCommon
-import com.example.activmitsu_can.domain.can.ICanReader
+import com.example.activmitsu_can.domain.can.LOW_PRESSURE
 import com.example.activmitsu_can.domain.can.TYRE_SENSOR_LF
 import com.example.activmitsu_can.domain.can.TYRE_SENSOR_LR
 import com.example.activmitsu_can.domain.can.TYRE_SENSOR_RF
 import com.example.activmitsu_can.domain.can.TYRE_SENSOR_RR
+import com.example.activmitsu_can.utils.extendedCombine
 import com.ub.utils.withUseCaseScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 
 class PreferencesViewModel(
-    private val canCommon: ICanCommon,
+    canCommon: ICanCommon,
     private val savedStateHandle: SavedStateHandle,
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
@@ -40,20 +42,24 @@ class PreferencesViewModel(
     val devicesFlow = canCommon.commonState
 
     init {
-        combine(
+        extendedCombine(
             savedStateHandle.getStateFlow(DEVICE_ID, _state.value.deviceId),
             savedStateHandle.getStateFlow(TYRE_SENSOR_LF, _state.value.sensorLeftFront),
             savedStateHandle.getStateFlow(TYRE_SENSOR_RF, _state.value.sensorRightFront),
             savedStateHandle.getStateFlow(TYRE_SENSOR_LR, _state.value.sensorLeftRear),
             savedStateHandle.getStateFlow(TYRE_SENSOR_RR, _state.value.sensorRightRear),
-        ) { deviceId, leftFront, rightFront, leftRear, rightRear ->
+            savedStateHandle.getStateFlow(LOW_PRESSURE, _state.value.lowPressureTreshhold),
+            savedStateHandle.getStateFlow(DISPLAYED_DELAY, _state.value.displayingHideDelayInSeconds),
+        ) { deviceId, leftFront, rightFront, leftRear, rightRear, lowPressure, displayedDelay ->
             _state.update { state ->
                 state.copy(
                     deviceId = deviceId,
                     sensorLeftFront = leftFront,
                     sensorRightFront = rightFront,
                     sensorLeftRear = leftRear,
-                    sensorRightRear = rightRear
+                    sensorRightRear = rightRear,
+                    lowPressureTreshhold = lowPressure,
+                    displayingHideDelayInSeconds = displayedDelay
                 )
             }
         }.launchIn(viewModelScope)
@@ -77,6 +83,14 @@ class PreferencesViewModel(
 
     fun onRightRearChange(rightRear: String) {
         savedStateHandle[TYRE_SENSOR_RR] = rightRear
+    }
+
+    fun onLowPressureChange(lowPressure: String) {
+        savedStateHandle[LOW_PRESSURE] = lowPressure.toFloatOrNull()
+    }
+
+    fun onDisplayDelayChange(displayDelay: String) {
+        savedStateHandle[DISPLAYED_DELAY] = displayDelay.toIntOrNull()
     }
 
     fun saveData() {
@@ -108,6 +122,8 @@ class PreferencesViewModel(
                     this[intPreferencesKey(TYRE_SENSOR_RF)] = rightFront
                     this[intPreferencesKey(TYRE_SENSOR_LR)] = leftRear
                     this[intPreferencesKey(TYRE_SENSOR_RR)] = rightRear
+                    this[floatPreferencesKey(LOW_PRESSURE)] = _state.value.lowPressureTreshhold
+                    this[intPreferencesKey(DISPLAYED_DELAY)] = _state.value.displayingHideDelayInSeconds
                 }
             }
             _dataSavedFlow.emit(Unit)

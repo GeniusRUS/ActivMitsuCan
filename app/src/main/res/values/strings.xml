@@ -21,6 +21,9 @@
     <string name="service_channel_id">activ_mitsu_can_channel_id</string>
     <string name="service_tracking_channel_name">Сервис чтения данных</string>
 
+    <string name="low_pressure_treshhold">Граница давления шин</string>
+    <string name="displaying_hide_delay">Задержка скрытия (сек.)</string>
+
     <string name="description_body">Кузов</string>
     <string name="description_hood">Капот</string>
     <string name="description_truncate">Багажник</string>

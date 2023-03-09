@@ -19,22 +19,34 @@ import android.view.WindowManager.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.example.activmitsu_can.BuildConfig
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.di.DIManager
 import com.example.activmitsu_can.domain.can.CanStateModel
+import com.example.activmitsu_can.domain.can.DISPLAYED_DELAY
 import com.example.activmitsu_can.domain.can.ICanReader
+import com.example.activmitsu_can.domain.can.LOW_PRESSURE
 import com.example.activmitsu_can.ui.activity.ApplicationActivity
 import com.ub.utils.LogUtils
 import com.ub.utils.UbNotify
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -42,6 +54,9 @@ class OverflowWindowService : Service() {
 
     @Inject
     lateinit var canReader: ICanReader
+
+    @Inject
+    lateinit var dataStore: DataStore<Preferences>
 
     private val superJob = SupervisorJob()
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO) + superJob
@@ -54,6 +69,9 @@ class OverflowWindowService : Service() {
     private var overlayView: View? = null
     private var params: LayoutParams? = null
     private var handler: Handler? = null
+    private var lowPressure = 2F
+    private var delayToHide = 5
+    private var delayedHideJob: Job? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -62,6 +80,20 @@ class OverflowWindowService : Service() {
         super.onCreate()
 
         DIManager.appComponent.inject(this)
+
+        dataStore.data
+            .map { it[floatPreferencesKey(LOW_PRESSURE)] }
+            .onEach { lowPressure ->
+                this.lowPressure = lowPressure ?: 2F
+            }
+            .launchIn(scope)
+
+        dataStore.data
+            .map { it[intPreferencesKey(DISPLAYED_DELAY)] }
+            .onEach { delayToHide ->
+                this.delayToHide = delayToHide ?: 5
+            }
+            .launchIn(scope)
 
         handler = Handler(Looper.getMainLooper())
 
@@ -117,8 +149,9 @@ class OverflowWindowService : Service() {
         )
 
         canReader.readerState.onEach { canState ->
+            println(canState.toString())
             handler?.post {
-                updateOverlayView(overlayView, canState)
+                showDelayedView()
             }
         }.launchIn(scope)
     }
@@ -149,9 +182,36 @@ class OverflowWindowService : Service() {
     }
 
     private fun createOverlayWindow() {
-        if (overlayView?.isAttachedToWindow == false) {
-            windowManager?.addView(overlayView, params)
+        handler?.post {
+            if (overlayView?.isAttachedToWindow == false) {
+                windowManager?.addView(overlayView, params)
+            }
             updateOverlayView(overlayView, canReader.readerState.value)
+        }
+        delayedHideJob?.cancel()
+        delayedHideJob = scope.launch {
+            delay(delayToHide * 1000L)
+            if (overlayView?.isAttachedToWindow == true) {
+                withContext(Dispatchers.Main) {
+                    windowManager?.removeView(overlayView)
+                }
+            }
+        }
+    }
+
+    private fun showDelayedView() {
+        handler?.post {
+            overlayView?.isVisible = true
+            updateOverlayView(overlayView, canReader.readerState.value)
+        }
+        delayedHideJob?.cancel()
+        delayedHideJob = scope.launch {
+            delay(delayToHide * 1000L)
+            if (overlayView?.isAttachedToWindow == true) {
+                withContext(Dispatchers.Main) {
+                    overlayView?.isGone = true
+                }
+            }
         }
     }
 
@@ -218,15 +278,15 @@ class OverflowWindowService : Service() {
         doorRearLeft?.isActivated = canReader.readerState.value.openable.leftBackward
         doorRearRight?.isActivated = canReader.readerState.value.openable.rightBackward
 
-        wheelFrontLeft?.isActivated = state.wheels.leftFrontPressure < 2F
-        wheelFrontRight?.isActivated = state.wheels.rightFrontPressure < 2F
-        wheelRearLeft?.isActivated = state.wheels.leftRearPressure < 2F
-        wheelRearRight?.isActivated = state.wheels.rightRearPressure < 2F
+        wheelFrontLeft?.isActivated = state.wheels.leftFrontPressure < lowPressure
+        wheelFrontRight?.isActivated = state.wheels.rightFrontPressure < lowPressure
+        wheelRearLeft?.isActivated = state.wheels.leftRearPressure < lowPressure
+        wheelRearRight?.isActivated = state.wheels.rightRearPressure < lowPressure
 
-        wheelFrontLeftPressure?.isActivated = state.wheels.leftFrontPressure < 2F
-        wheelFrontRightPressure?.isActivated = state.wheels.rightFrontPressure < 2F
-        wheelRearLeftPressure?.isActivated = state.wheels.leftRearPressure < 2F
-        wheelRearRightPressure?.isActivated = state.wheels.rightRearPressure < 2F
+        wheelFrontLeftPressure?.isActivated = state.wheels.leftFrontPressure < lowPressure
+        wheelFrontRightPressure?.isActivated = state.wheels.rightFrontPressure < lowPressure
+        wheelRearLeftPressure?.isActivated = state.wheels.leftRearPressure < lowPressure
+        wheelRearRightPressure?.isActivated = state.wheels.rightRearPressure < lowPressure
 
         wheelFrontLeftPressure?.text = String.format(
             getString(R.string.pressure_mask),
@@ -268,6 +328,7 @@ class OverflowWindowService : Service() {
         const val STOP_SERVICE = "${BuildConfig.APPLICATION_ID}/can/stop"
         private const val TAG = "OverflowWindowService"
         private const val FOREGROUND_NOTIFICATION_ID = 42
+        @Suppress("DEPRECATION")
         private const val LayoutParamFlags = LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
             LayoutParams.FLAG_NOT_TOUCH_MODAL or
             LayoutParams.FLAG_NOT_FOCUSABLE or

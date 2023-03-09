@@ -46,3 +46,5 @@ const val TYRE_SENSOR_LF = "sensor_lf"  // left front
 const val TYRE_SENSOR_RF = "sensor_rf"  // right front
 const val TYRE_SENSOR_LR = "sensor_lr"  // left rear
 const val TYRE_SENSOR_RR = "sensor_rr"  // right rear
+const val LOW_PRESSURE = "low_pressure"
+const val DISPLAYED_DELAY = "displayed_delay"

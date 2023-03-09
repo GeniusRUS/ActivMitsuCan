@@ -30,7 +30,7 @@ class CanReaderMock @Inject constructor(
     init {
         appCoroutineScope.launch {
             timer.forEach { time ->
-                delay(TimeUnit.SECONDS.toMillis(1))
+                delay(TimeUnit.SECONDS.toMillis(10))
                 _commonState.update { state ->
                     state.copy(
                         availableDevices = listOf(

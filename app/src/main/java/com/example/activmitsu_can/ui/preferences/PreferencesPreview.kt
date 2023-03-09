@@ -20,7 +20,9 @@ fun DefaultPreview() {
             onLeftRearChange = {},
             onLeftFrontChange = {},
             onDeviceIdChange = {},
-            onSelectDeviceToConnect = {}
+            onSelectDeviceToConnect = {},
+            onDisplayingHideChange = {},
+            onLowPressureChange = {}
         )
     }
 }
