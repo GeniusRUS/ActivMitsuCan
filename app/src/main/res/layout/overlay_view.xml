@@ -25,6 +25,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/hood_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/hood_open"
+            android:contentDescription="@string/description_hood"
+            android:visibility="gone"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/truncate_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/trunkate_open"
+            android:contentDescription="@string/description_truncate"
+            android:visibility="gone"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible"/>
+
+        <ImageView
             android:id="@+id/door_front_left"
             android:layout_width="match_parent"
             android:layout_height="0dp"

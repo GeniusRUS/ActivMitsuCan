@@ -19,6 +19,7 @@ import android.view.WindowManager.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.example.activmitsu_can.BuildConfig
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.di.DIManager
@@ -186,6 +187,9 @@ class OverflowWindowService : Service() {
     }
 
     private fun updateOverlayView(overlayView: View?, state: CanStateModel) {
+        val hood = overlayView?.findViewById<ImageView>(R.id.hood_image)
+        val truncate = overlayView?.findViewById<ImageView>(R.id.truncate_image)
+
         val doorFrontLeft = overlayView?.findViewById<ImageView>(R.id.door_front_left)
         val doorFrontRight = overlayView?.findViewById<ImageView>(R.id.door_front_right)
         val doorRearLeft = overlayView?.findViewById<ImageView>(R.id.door_rear_left)
@@ -205,6 +209,9 @@ class OverflowWindowService : Service() {
         val wheelFrontRightPressure = overlayView?.findViewById<TextView>(R.id.wheel_front_right_pressure)
         val wheelRearLeftPressure = overlayView?.findViewById<TextView>(R.id.wheel_rear_left_pressure)
         val wheelRearRightPressure = overlayView?.findViewById<TextView>(R.id.wheel_rear_right_pressure)
+
+        hood?.isVisible = canReader.readerState.value.openable.hood
+        truncate?.isVisible = canReader.readerState.value.openable.truncate
 
         doorFrontLeft?.isActivated = canReader.readerState.value.openable.leftForward
         doorFrontRight?.isActivated = canReader.readerState.value.openable.rightForward

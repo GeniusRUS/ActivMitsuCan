@@ -54,7 +54,9 @@ class CanReaderMock @Inject constructor(
                                 leftForward = random.nextBoolean(),
                                 leftBackward = random.nextBoolean(),
                                 rightBackward = random.nextBoolean(),
-                                rightForward = random.nextBoolean()
+                                rightForward = random.nextBoolean(),
+                                truncate = random.nextBoolean(),
+                                hood = random.nextBoolean()
                             ),
                             wheels = state.wheels.copy(
                                 leftFrontPressure = random.nextInt(25).div(10F),

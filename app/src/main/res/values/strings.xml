@@ -22,6 +22,8 @@
     <string name="service_tracking_channel_name">Сервис чтения данных</string>
 
     <string name="description_body">Кузов</string>
+    <string name="description_hood">Капот</string>
+    <string name="description_truncate">Багажник</string>
     <string name="description_door_front_left">Передняя левая дверь</string>
     <string name="description_door_front_right">Передняя правая дверь</string>
     <string name="description_door_rear_left">Задняя левая дверь</string>
