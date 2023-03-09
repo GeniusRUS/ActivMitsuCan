@@ -42,7 +42,7 @@ data class CanDevice(
 )
 
 const val DEVICE_ID = "device_id"
-const val TYRE_SENSOR_LF = "sensor_lf"  // left forward
-const val TYRE_SENSOR_RF = "sensor_rf"  // right forward
-const val TYRE_SENSOR_LB = "sensor_lb"  // left backward
-const val TYRE_SENSOR_RB = "sensor_rb"  // right backward
+const val TYRE_SENSOR_LF = "sensor_lf"  // left front
+const val TYRE_SENSOR_RF = "sensor_rf"  // right front
+const val TYRE_SENSOR_LR = "sensor_lr"  // left rear
+const val TYRE_SENSOR_RR = "sensor_rr"  // right rear

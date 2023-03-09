@@ -13,7 +13,6 @@ fun DefaultPreview() {
             state = MainState(),
             onTryToConnect = {},
             onTryToDisconnect = {},
-            onDeviceIdChange = {},
             onGoToSettings = {},
             onChangeOverlayNeeded = {},
             errorFlow = emptyFlow()

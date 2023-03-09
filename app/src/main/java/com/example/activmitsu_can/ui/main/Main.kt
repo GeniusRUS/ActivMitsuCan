@@ -9,20 +9,17 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.activmitsu_can.R
 import com.example.activmitsu_can.utils.collectAsEffect
@@ -33,8 +30,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     state: MainState,
     onTryToConnect: (Boolean) -> Unit,
-    onTryToDisconnect: () -> Unit,
-    onDeviceIdChange: (String) -> Unit,
+    onTryToDisconnect: (Boolean) -> Unit,
     onGoToSettings: () -> Unit,
     onChangeOverlayNeeded: (Boolean) -> Unit,
     errorFlow: Flow<String>
@@ -62,14 +58,11 @@ fun MainScreen(
                 Text(
                     text = "Speed: ${state.speed}\nCvt temp: ${state.cvtTemp}"
                 )
-                if (!state.isConnected) {
-                    TextField(
-                        value = state.deviceId,
-                        onValueChange = onDeviceIdChange,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal
-                        )
-                    )
+                Button(
+                    onClick = onGoToSettings,
+                    enabled = !state.isConnected
+                ) {
+                    Text(text = stringResource(id = R.string.go_to_preferences))
                 }
                 Button(
                     onClick = { onTryToConnect.invoke(state.isNeedOverlay) },
@@ -91,7 +84,7 @@ fun MainScreen(
                     )
                 }
                 Button(
-                    onClick = onTryToDisconnect,
+                    onClick = { onTryToDisconnect.invoke(state.isNeedOverlay) },
                     enabled = state.isConnected,
                     modifier = Modifier
                         .fillMaxWidth()

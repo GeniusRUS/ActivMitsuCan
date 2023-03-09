@@ -65,11 +65,6 @@ class MainFragment : Fragment() {
                     ) {
                         MainScreen(
                             state = state,
-                            onDeviceIdChange = { viewModel.onDeviceIdChanged(it) },
-                            onTryToDisconnect = {
-                                removeOverlayWindow()
-                                viewModel.stopListener()
-                            },
                             onTryToConnect = { isNeedOverlay ->
                                 if (isNeedOverlay) {
                                     if (checkStartPermissionRequest() && checkNotificationPermission()) {
@@ -79,6 +74,12 @@ class MainFragment : Fragment() {
                                 } else {
                                     viewModel.startListener()
                                 }
+                            },
+                            onTryToDisconnect = { isNeedOverlay ->
+                                if (isNeedOverlay) {
+                                    removeOverlayWindow()
+                                }
+                                viewModel.stopListener()
                             },
                             onGoToSettings = {
                                 val direction = MainFragmentDirections.actionMainFragmentToPreferencesFragment()

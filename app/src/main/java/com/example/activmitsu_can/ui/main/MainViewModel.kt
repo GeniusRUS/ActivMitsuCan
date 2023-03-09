@@ -76,7 +76,6 @@ class MainViewModel @AssistedInject constructor(
             _state.value.deviceId.toIntOrNull()?.let { deviceId ->
                 dataStore.updateData {
                     it.toMutablePreferences().apply {
-                        this[intPreferencesKey(DEVICE_ID)] = deviceId
                         this[booleanPreferencesKey(OVERLAY_IS_ENABLED)] = _state.value.isNeedOverlay
                     }
                 }
@@ -88,10 +87,6 @@ class MainViewModel @AssistedInject constructor(
 
     fun onChangeOverlayNeeded(isNeedOverlay: Boolean) {
         savedStateHandle[OVERLAY_IS_ENABLED] = isNeedOverlay
-    }
-
-    fun onDeviceIdChanged(deviceId: String) {
-        savedStateHandle[DEVICE_ID] = deviceId
     }
 
     fun attachListener() {

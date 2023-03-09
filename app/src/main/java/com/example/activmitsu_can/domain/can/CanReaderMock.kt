@@ -68,6 +68,26 @@ class CanReaderMock @Inject constructor(
                             )
                         )
                     }
+                } else {
+                    _commonState.update { state ->
+                        val devicesCount = Random().nextInt(5)
+                        val devices = buildList {
+                            (0..devicesCount).forEach { position ->
+                                add(
+                                    CanDevice(
+                                        name = "Device $position",
+                                        deviceId = position,
+                                        productName = "Name for $position",
+                                        vendorId = position,
+                                        productId = position
+                                    )
+                                )
+                            }
+                        }
+                        state.copy(
+                            availableDevices = devices
+                        )
+                    }
                 }
             }
         }

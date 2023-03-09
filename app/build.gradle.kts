@@ -1,9 +1,23 @@
+import java.io.BufferedReader
+
 plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
     id("androidx.navigation.safeargs.kotlin")
 }
+
+val commitHash = Runtime
+    .getRuntime()
+    .exec("git rev-parse --short HEAD")
+    .let { process ->
+        process.waitFor()
+        val output = process.inputStream.use {
+            it.bufferedReader().use(BufferedReader::readText)
+        }
+        process.destroy()
+        output.trim()
+    }
 
 android {
     namespace = "com.example.activmitsu_can"
@@ -16,6 +30,7 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        setProperty("archivesBaseName", "$applicationId-$versionName($versionCode)-$commitHash")
     }
     buildTypes {
         debug {

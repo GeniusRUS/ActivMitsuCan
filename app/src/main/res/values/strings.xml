@@ -4,6 +4,11 @@
     <string name="try_to_connect">Соединиться</string>
     <string name="try_to_disconnect">Отсоединиться</string>
     <string name="is_foreground_is_needed">Отображать поверх</string>
+    <string name="go_to_preferences">Настройки</string>
+    <string name="hint_device_id">Идентификатор устройства</string>
+    <string name="save">Сохранить</string>
+
+    <string name="preferences_devices_title">Доступные устройства</string>
 
     <string name="temperature_mask">%1$s гр.</string>
     <string name="pressure_mask">%1$s атм</string>
